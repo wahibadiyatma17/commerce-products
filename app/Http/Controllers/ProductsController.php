@@ -8,12 +8,17 @@ use Illuminate\Support\Facades\DB;
 
 class ProductsController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $products = Products::all();
-        return [
-            "status" => 200,
-            "data" => $products
-        ];
+        $result = Products::all();
+        if ($request -> title){
+            $term = strtolower($request->query('title'));
+            $result = Products::whereRaw('lower(title) like (?)',["%{$term}%"])->get();
+        } else if ($request -> id){
+            $term = $request->query('id');
+            $result = Products::whereRaw('id like (?)',["%{$term}%"])->get();
+        }
+        return $result;
     }
+
 }
